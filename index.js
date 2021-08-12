@@ -173,16 +173,25 @@ class FirebaseProvider extends SettingProvider {
 	 setupGuild(guildId, settings) {
 		if(typeof guildId !== 'string') throw new TypeError('The guild must be a guild ID or "global".');
 		const guild = this.client.guilds.cache.get(guildId) || null;
+        console.log(settings.prefix);
 
 		// Load the command prefix
 		if(typeof settings.prefix !== 'undefined') {
-			if(guild) guild.commandPrefix = settings.prefix;
-			else this.client.commandPrefix = settings.prefix;
+			if(guild) {
+                guild.commandPrefix = settings.prefix;
+            }
+			else {
+                if(guildId == 'global'){
+                this.client.commandPrefix = settings.prefix;
+                }
+            }
 		}
 
 		// Load all command/group statuses
+        if(guild || guildId == 'global'){
 		for(const command of this.client.registry.commands.values()) this.setupGuildCommand(guild, command, settings);
 		for(const group of this.client.registry.groups.values()) this.setupGuildGroup(guild, group, settings);
+        }
 	}
 
     /**
